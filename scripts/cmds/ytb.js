@@ -1,121 +1,116 @@
+/cmd install const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
-const ytdlp = require("yt-dlp-exec");
-const axios = require("axios");
+const ytdl = require("ytdl-core");
 const { execSync } = require("child_process");
 
 module.exports = {
   config: {
     name: "ytb",
-    version: "2.1",
-    author: "Rifat",
-    countDown: 5,
-    role: 0,
+    aliases: ["ytbdl", "yt-dl"],
+    version: "1.0",
+    author: "RIFAT",
     shortDescription: {
       en: "Download YouTube video/audio",
-      vi: "Tải video/audio từ YouTube"
+      vi: "Tải video/audio YouTube"
     },
     longDescription: {
-      en: "Search or provide YouTube link to download video or audio",
-      vi: "Tìm kiếm hoặc cung cấp liên kết YouTube để tải video hoặc audio"
+      en: "Download video or audio from YouTube using name or link",
+      vi: "Tải video hoặc audio từ YouTube bằng tên hoặc link"
     },
     category: "media",
     guide: {
-      en: "{pn} [name or link]",
-      vi: "{pn} [tên hoặc liên kết]"
+      en: "{prefix}ytb video/audio <video name or link>",
+      vi: "{prefix}ytb video/audio <tên video hoặc liên kết>"
     }
   },
 
-  onStart: async function ({ args, message, event, commandName }) {
-    // Ensure yt-dlp is installed
+  onStart: async function ({ api, event, args, message }) {
+    const type = args[0];
+    const query = args.slice(1).join(" ");
+
+    if (!["video", "audio"].includes(type) || !query)
+      return message.reply("Usage:\n.ytb video/audio <video name or link>");
+
+    if (query.startsWith("http")) {
+      return handleDownload(api, event, type, query, message);
+    }
+
+    const apiKey = "AIzaSyD4RQJmE--tYQlEfanIxEV5p9sWD54EMOQ";
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&key=${apiKey}&maxResults=6&type=video`;
+
     try {
-      execSync("yt-dlp --version", { stdio: "ignore" });
-    } catch (err) {
-      message.reply("Installing yt-dlp globally using pip...");
-      try {
-        execSync("pip install yt-dlp", { stdio: "inherit" });
-        message.reply("✅ yt-dlp installed successfully.");
-      } catch (installErr) {
-        return message.reply("❌ Failed to install yt-dlp. Please install it manually: `pip install yt-dlp`");
-      }
-    }
+      const res = await axios.get(searchUrl);
+      const results = res.data.items;
 
-    if (!args[0]) return message.reply("Please enter a YouTube link or search term.");
+      if (!results.length) return message.reply("No videos found.");
 
-    const query = args.join(" ");
-    const ytLinkRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[\w\-]+/;
-    const link = query.match(ytLinkRegex)?.[0];
+      const list = results.map((v, i) =>
+        `${i + 1}. ${v.snippet.title} (${v.snippet.channelTitle})`
+      ).join("\n");
 
-    if (link) {
-      return await downloadYT(link, message, event);
-    }
-
-    // Search mode
-    const apiKey = "AIzaSyDYFu-jPat_hxdssXEK4y2QmCOkefEGnso";
-    const res = await axios.get("https://www.googleapis.com/youtube/v3/search", {
-      params: {
-        q: query,
-        key: apiKey,
-        maxResults: 6,
-        part: "snippet",
-        type: "video"
-      }
-    });
-
-    const results = res.data.items;
-    if (results.length === 0) return message.reply("No results found.");
-
-    let text = "Choose a video to download:\n\n";
-    results.forEach((v, i) => {
-      text += `${i + 1}. ${v.snippet.title}\n`;
-    });
-
-    message.reply(text + "\nReply with a number (1-6).", (err, info) => {
-      global.GoatBot.onReply.set(info.messageID, {
-        commandName,
-        messageID: info.messageID,
-        author: event.senderID,
-        results
+      message.reply("Reply with a number:\n" + list, (err, info) => {
+        global.GoatBot.onReply.set(info.messageID, {
+          commandName: "ytb",
+          author: event.senderID,
+          type,
+          results
+        });
       });
-    });
+
+    } catch (err) {
+      console.error(err);
+      return message.reply("Error while searching.");
+    }
   },
 
-  onReply: async function ({ message, event, Reply }) {
-    if (event.senderID !== Reply.author) return;
+  onReply: async function ({ event, Reply, message, api }) {
+    const { author, results, type } = Reply;
+    if (event.senderID !== author) return;
 
-    const choice = parseInt(event.body);
-    if (isNaN(choice) || choice < 1 || choice > Reply.results.length)
-      return message.reply("Invalid number!");
+    const index = parseInt(event.body);
+    if (isNaN(index) || index < 1 || index > results.length)
+      return message.reply("Invalid choice.");
 
-    const videoId = Reply.results[choice - 1].id.videoId;
-    const link = `https://www.youtube.com/watch?v=${videoId}`;
-    await downloadYT(link, message, event);
+    const videoId = results[index - 1].id.videoId;
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    return handleDownload(api, event, type, videoUrl, message);
   }
 };
 
-async function downloadYT(link, message, event) {
-  const id = `${Date.now()}_${event.threadID}`;
-  const filePath = path.join(__dirname, "..", "tmp", `${id}.mp4`);
-
-  message.reply("⏳ Downloading video...");
-
+async function handleDownload(api, event, type, videoUrl, message) {
   try {
-    await ytdlp(link, {
-      format: "mp4",
-      output: filePath,
-      cookies: "cookies.txt"
+    const response = await axios({
+      method: "GET",
+      url: `https://yt-api-bd40.onrender.com/download`,
+      params: {
+        url: videoUrl,
+        type
+      },
+      responseType: "stream"
     });
 
-    if (!fs.existsSync(filePath)) return message.reply("❌ Video not found after download.");
+    const ext = type === "audio" ? "mp3" : "mp4";
+    const fileName = `ytb_${Date.now()}.${ext}`;
+    const filePath = path.join(__dirname, "cache", fileName);
 
-    await message.reply({
-      body: "✅ Here's your video:",
-      attachment: fs.createReadStream(filePath)
+    const writer = fs.createWriteStream(filePath);
+    response.data.pipe(writer);
+
+    writer.on("finish", () => {
+      message.reply({
+        body: `✅ Here is your ${type}`,
+        attachment: fs.createReadStream(filePath)
+      }, () => fs.unlinkSync(filePath));
     });
 
-    fs.unlinkSync(filePath);
-  } catch (err) {
-    console.error("yt-dlp error:", err);
-    return message.reply("❌ Failed to download the video.");
+    writer.on("error", err => {
+      console.error(err);
+      message.reply("Failed to save file.");
+    });
+
+  } catch (e) {
+    console.error(e.message);
+    message.reply("❌ Failed to get download link or stream the file.");
   }
-}
+} ytb.js
