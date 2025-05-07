@@ -1,4 +1,4 @@
-/cmd install const axios = require("axios");
+const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const ytdl = require("ytdl-core");
@@ -113,4 +113,4 @@ async function handleDownload(api, event, type, videoUrl, message) {
     console.error(e.message);
     message.reply("❌ Failed to get download link or stream the file.");
   }
-} ytb.js
+}
