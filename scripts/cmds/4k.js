@@ -1,70 +1,44 @@
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
+const axios = require("axios");
 
+const baseApiUrl = async () => {
+  const base = await axios.get(
+    `https://raw.githubusercontent.com/Mostakim0978/D1PT0/refs/heads/main/baseApiUrl.json`
+  );
+  return base.data.mostakim;
+};
 module.exports.config = {
-    name: "4k",
-    version: "1.0.0",
-    author: "Priyanshi Kaur",
-    countDown: 5,
-    role: 0,
-    shortDescription: "Upscale an image",
-    longDescription: "Upscale an image to higher resolution",
-    category: "image",
-    guide: {
-        en: "{pn} [Reply to an image]"
-    }
+  name: "4k",
+  aliases: ["4k", "remini"],
+  category: "enhanced",
+  author: "RIFAT",
+    credit: " Romim"
 };
 
-module.exports.onStart = async function ({ api, event, message }) {
-    const { messageReply, threadID, messageID } = event;
+module.exports.onStart = async ({ api, event, args }) => {
+  try {
 
-    if (!messageReply || !messageReply.attachments || !messageReply.attachments[0]) {
-        return message.reply("Please reply to an image to upscale it.");
+    if (!event.messageReply || !event.messageReply.attachments || !event.messageReply.attachments[0]) {
+      return api.sendMessage("𝐏𝐥𝐞𝐚𝐬𝐞 𝐫𝐞𝐩𝐥𝐲 𝐭𝐨 𝐚𝐧 𝐢𝐦𝐚𝐠𝐞 𝐰𝐢𝐭𝐡 𝐭𝐡𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝.", event.threadID, event.messageID);
     }
 
-    const attachment = messageReply.attachments[0];
-    if (attachment.type !== "photo") {
-        return message.reply("The replied content must be an image.");
-    }
 
-    try {
-        const apiKey = "YOUR_API_KEY"; // Get Key From https://for-devs.onrender.com/user/login
-        message.reply("⌛ Processing your image...");
+    const Romim = event.messageReply?.attachments[0]?.url;
 
-        const response = await axios({
-            method: 'get',
-            url: `https://for-devs.onrender.com/api/upscale`,
-            params: {
-                imageurl: attachment.url,
-                apikey: apiKey
-            },
-            responseType: 'arraybuffer'
-        });
 
-        // Create temporary file path
-        const tempFilePath = path.join(__dirname, "temp", `upscaled_${Date.now()}.png`);
-        
-        // Ensure temp directory exists
-        if (!fs.existsSync(path.join(__dirname, "temp"))) {
-            fs.mkdirSync(path.join(__dirname, "temp"));
-        }
+    const apiUrl = (`${await baseApiUrl()}/remini?input=${encodeURIComponent(Romim)}`);
+ 
 
-        // Write the image to temporary file
-        fs.writeFileSync(tempFilePath, Buffer.from(response.data));
+    const imageStream = await axios.get(apiUrl,{
+      responseType: 'stream'
+    });
 
-        // Send the upscaled image
-        await api.sendMessage(
-            {
-                attachment: fs.createReadStream(tempFilePath),
-                body: "✨ Here's your upscaled image!"
-            },
-            threadID,
-            () => fs.unlinkSync(tempFilePath) // Clean up temp file after sending
-        );
 
-    } catch (error) {
-        console.error(error);
-        return message.reply("❌ An error occurred while processing your image. Please try again later.");
-    }
+    api.sendMessage({
+      body: "𝐇𝐞𝐫𝐞 𝐢𝐬 𝐲𝐨𝐮𝐫 𝐞𝐧𝐡𝐚𝐧𝐜𝐞𝐝 𝐩𝐡𝐨𝐭𝐨",
+      attachment: imageStream.data
+    }, event.threadID, event.messageID);
+
+  } catch (e) {
+    api.sendMessage(`Error: ${e.message}`, event.threadID, event.messageID);
+  }
 };
