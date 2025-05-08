@@ -7,7 +7,7 @@ module.exports = {
   config: {
     name: "pair",
     aliases: [],
-    version: "1.1",
+    version: "1.6",
     author: "rifat",
     countDown: 5,
     role: 0,
@@ -33,11 +33,9 @@ module.exports = {
 
     const mentionID = Object.keys(mentions)[0];
 
-    // URL for the background image
     const bgUrl = "https://i.postimg.cc/X7R3CLmb/267378493-3075346446127866-4722502659615516429-n.png";
 
     try {
-      // Fetching background image from URL
       const bgRes = await axios.get(bgUrl, { responseType: "arraybuffer" });
       const bg = await loadImage(Buffer.from(bgRes.data, "binary"));
 
@@ -46,16 +44,14 @@ module.exports = {
 
       const canvas = createCanvas(bg.width, bg.height);
       const ctx = canvas.getContext("2d");
+
       ctx.drawImage(bg, 0, 0);
 
-      // Avatar dimensions (make them bigger to fit well into the heart)
-      const avatarSize = 180;
+      const avatarSize = 200;
 
-      // Left heart (mention user) - Position and size
-      ctx.drawImage(avatar2, 50, 210, avatarSize, avatarSize);
-
-      // Right heart (sender) - Position and size
-      ctx.drawImage(avatar1, 950, 210, avatarSize, avatarSize);
+      // Adjusted avatar positions
+      ctx.drawImage(avatar2, 90, 280, avatarSize, avatarSize);   // Mentioned user (x - 20)
+      ctx.drawImage(avatar1, 910, 280, avatarSize, avatarSize);  // Sender
 
       const outPath = path.join(__dirname, "pair.png");
       const out = fs.createWriteStream(outPath);
