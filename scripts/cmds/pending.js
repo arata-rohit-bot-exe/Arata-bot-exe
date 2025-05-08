@@ -24,7 +24,7 @@ module.exports = {
       cantGetPendingList: "Can't get the pending list!",
       returnListPending: "»『PENDING』«❮ Total threads awaiting approval: %1 ❯\n\n%2",
       returnListClean: "『PENDING』There are no threads in the pending list.",
-      welcome: "QueenBot is now connected 🫂🤍:\n\n• Join our support group:\nhttps://facebook.com/groups/7067206133407080/\n\n• Type %1enter to join messenger group\n• Type %1help1 for command list"
+      welcome: "NOOB BOTV2 is successfully connected 🫂🤍:\n\n• Join here to learn more about the bot:\nhttps://facebook.com/groups/7067206133407080/\n\n• Type %1enter to enter the messenger group 🙂🤍\n\n• Type %1help1 to view the bot's commands 🫂🌝🤍"
     },
     vi: {
       invaildNumber: "%1 không phải là số hợp lệ",
@@ -33,7 +33,7 @@ module.exports = {
       cantGetPendingList: "Không thể lấy danh sách nhóm chờ!",
       returnListPending: "»『CHỜ DUYỆT』«❮ Tổng số nhóm đang chờ duyệt: %1 ❯\n\n%2",
       returnListClean: "『CHỜ DUYỆT』Không có nhóm nào đang chờ duyệt.",
-      welcome: "QueenBot đã kết nối thành công 🫂🤍:\n\n• Tham gia nhóm hỗ trợ:\nhttps://facebook.com/groups/7067206133407080/\n\n• Gõ %1enter để vào nhóm chat\n• Gõ %1help1 để xem lệnh bot"
+      welcome: "NOOB BOTV2 đã kết nối thành công 🫂🤍:\n\n• Tham gia nhóm hỗ trợ:\nhttps://facebook.com/groups/7067206133407080/\n\n• Gõ %1enter để vào nhóm chat\n• Gõ %1help1 để xem lệnh bot"
     }
   },
 
