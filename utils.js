@@ -248,14 +248,29 @@ function getExtFromUrl(url = "") {
 }
 
 function getPrefix(threadID) {
-	if (!threadID || isNaN(threadID))
-		throw new Error('The first argument (threadID) must be a number');
-	threadID = String(threadID);
-	let prefix = global.GoatBot.config.prefix;
-	const threadData = global.db.allThreadData.find(t => t.threadID == threadID);
-	if (threadData)
-		prefix = threadData.data.prefix || prefix;
-	return prefix;
+  if (!threadID || isNaN(threadID)) 
+    throw new Error('The first argument (threadID) must be a number');
+
+  threadID = String(threadID);
+
+  // Default prefix from config
+  let prefix = global.GoatBot.config.prefix;
+
+  // Get thread-specific data
+  const threadData = global.db.allThreadData.find(t => t.threadID == threadID);
+
+  if (threadData) {
+    // If noPrefixMode is true, return an empty string
+    if (threadData.data?.noPrefixMode === true) return "";
+    // Otherwise, check for a custom prefix
+    prefix = threadData.data?.prefix || prefix;
+  }
+
+  return prefix;
+}
+
+module.exports = {
+  getPrefix
 }
 
 function getTime(timestamps, format) {
