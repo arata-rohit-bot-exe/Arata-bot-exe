@@ -14,12 +14,22 @@ module.exports = {
       en: "Displays detailed system information.",
     },
     guide: {
-      en: "Use .uptime to get system metrics.",
+      en: "Use .uptime or uptime to get system metrics.",
     },
   },
 
-  onStart: async function ({ api, event, threadsData, usersData }) {
+  onStart: async function ({ api, event, threadsData, usersData, args }) {
     try {
+      const userCommand = event.body?.toLowerCase().trim();
+      const allAliases = ["uptime", "up", "upt", "stats", "info"];
+      const prefix = global.GoatBot.config.prefix || ".";
+
+      // Check if command is called without prefix
+      if (
+        !userCommand?.startsWith(prefix) &&
+        !allAliases.includes(userCommand)
+      ) return;
+
       const checkingMessage = await api.sendMessage("⏳ Gathering system information...", event.threadID);
 
       const uptimeSec = process.uptime();
@@ -62,8 +72,7 @@ module.exports = {
 
       const ping = Date.now() - checkingMessage.timestamp;
 
-      const systemInfo = `
-⏰ Bot Uptime: ${uptimeFormatted}
+      const systemInfo = `⏰ Bot Uptime: ${uptimeFormatted}
 🖥 Host Server: ${os.type()} ${os.release()}
 💾 Host Architecture: ${os.arch()}
 🖥 Host CPU: ${cpuModel} (${cpuCores} cores)
@@ -75,8 +84,8 @@ module.exports = {
 👤 Total Users: ${userCount}
 👥 Total Groups: ${threadCount}
 🌐 Network Interfaces: ${ifaceNames}
-📎 Network Addresses: ${addresses.join('\n')}
-      `.trim();
+📎 Network Addresses:
+${addresses.join('\n')}`.trim();
 
       await api.editMessage(systemInfo, checkingMessage.messageID);
     } catch (err) {
