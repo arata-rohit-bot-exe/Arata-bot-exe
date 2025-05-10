@@ -33,36 +33,23 @@ module.exports = {
     const name2 = targetInfo.name || "Unknown";
     const compatibility = Math.floor(Math.random() * 101);
 
-    const canvas = createCanvas(700, 400);
+    // Create canvas
+    const canvas = createCanvas(512 * 2, 512);
     const ctx = canvas.getContext("2d");
 
-    // Background
-    ctx.fillStyle = "#ffc0cb";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Title
-    ctx.fillStyle = "red";
-    ctx.font = "bold 32px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(`Compatibility: ${compatibility}%`, 350, 50);
-
-    // Load avatars (using the new getAvatar method)
+    // Load avatars
     const avatar1 = await getAvatar(senderID);
     const avatar2 = await getAvatar(targetID);
-    ctx.drawImage(avatar1, 100, 100, 200, 200);
-    ctx.drawImage(avatar2, 400, 100, 200, 200);
+    ctx.drawImage(avatar1, 0, 0, 512, 512);
+    ctx.drawImage(avatar2, 512, 0, 512, 512);
 
-    // Names
-    ctx.fillStyle = "red";
-    ctx.font = "bold 24px Arial";
-    ctx.fillText(`${name1} & ${name2}`, 350, 350);
-
-    // Output
+    // Save image
     const outputPath = path.join(__dirname, "cache", `couple_${senderID}.png`);
     fs.writeFileSync(outputPath, canvas.toBuffer());
 
+    // Send image then delete
     api.sendMessage({
-      body: `${name1} matched with ${name2}!\nLove compatibility: ${compatibility}%`,
+      body: `${name1} ❤️ ${name2}\nLove compatibility: ${compatibility}%`,
       attachment: fs.createReadStream(outputPath)
     }, threadID, () => fs.unlinkSync(outputPath), messageID);
   }
@@ -76,4 +63,4 @@ async function getAvatar(uid) {
   } catch (error) {
     return await loadImage(path.join(__dirname, "cache", "noavatar.png"));
   }
-    }
+}
