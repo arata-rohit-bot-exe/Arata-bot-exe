@@ -42,12 +42,12 @@ module.exports = {
 
     if (command === "off") {
       isEnabled = false;
-      return api.sendMessage("Rifat bot বন্ধ করা হয়েছে।", event.threadID);
+      return api.sendMessage("Kazuba bot বন্ধ করা হয়েছে।", event.threadID);
     }
 
     if (command === "on") {
       isEnabled = true;
-      return api.sendMessage("Rifat bot চালু করা হয়েছে।", event.threadID);
+      return api.sendMessage("Kazuha চালু করা হয়েছে।", event.threadID);
     }
 
     if (command === "bangla") {
