@@ -43,11 +43,11 @@ function getOwnerInfo() {
 
   return `👑 Owner Information 👑
 
-• Name: Rifat
+• Name: Kazuha Yushimo
 • Gender: Male
 • Pronouns: He/Him
 • Relationship: Single
-• Facebook: https://www.facebook.com/rifat.gmer.69
+• Facebook: https://www.facebook.com/100020516392760
 
 🤖 Bot Info:
 • Bot Name: ${botName}
