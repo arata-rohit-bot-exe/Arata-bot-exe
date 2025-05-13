@@ -1,5 +1,5 @@
 const { io } = require('socket.io-client');
-const socket = io('http://0.0.0.0:3001' /*your url*/, {
+const socket = io('http://0.0.0.0:443' /*your url*/, {
 	query: {
 		verifyToken: "Fn96OxLwWEfENTPYPAiXqwdieaIsn4Y5OH2APP0O"
 	}
