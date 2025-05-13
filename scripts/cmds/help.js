@@ -35,7 +35,7 @@ module.exports = {
       const categories = {};
       let msg = "";
 
-      msg += `🎀 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨 𝐍𝐎𝐎𝐁 𝐁𝐎𝐓𝐕𝟐 𝐇𝐞𝐥𝐩 𝐌𝐞𝐧𝐮 🎀\n`;
+      msg += `🎀 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨 KAZUHA 𝐁𝐎𝐓𝐕𝟐 𝐇𝐞𝐥𝐩 𝐌𝐞𝐧𝐮 🎀\n`;
       msg += `────────────────────────────\n`;
 
       for (const [name, value] of commands) {
@@ -53,8 +53,8 @@ module.exports = {
       }
 
       msg += `📌 𝐔𝐬𝐞: ${prefix}help [command name] 𝐭𝐨 𝐯𝐢𝐞𝐰 𝐝𝐞𝐭𝐚𝐢𝐥𝐬\n`;
-      msg += `📊 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬 𝐢𝐧 𝐍𝐎𝐎𝐁 𝐁𝐎𝐓𝐕𝟐: ${totalCommands}\n`;
-      msg += `🎀 𝐓𝐡𝐚𝐧𝐤 𝐘𝐨𝐮 𝐟𝐨𝐫 𝐔𝐬𝐢𝐧𝐠 𝐍𝐎𝐎𝐁 𝐁𝐎𝐓𝐕𝟐 🎀`;
+      msg += `📊 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬 𝐢𝐧 KAZUHA BOTV2: ${totalCommands}\n`;
+      msg += `🎀 𝐓𝐡𝐚𝐧𝐤 𝐘𝐨𝐮 𝐟𝐨𝐫 𝐔𝐬𝐢𝐧𝐠 KAZUHA 𝐁𝐎𝐓𝐕𝟐 🎀`;
 
       const helpListImages = [
         "https://i.postimg.cc/8cvDpt37/images-17.jpg",
